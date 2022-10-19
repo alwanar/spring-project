@@ -2,7 +2,9 @@ package com.example.jdbc.controller;
 
 //import com.example.jdbc.dto.KonfigurasiMitra;
 import com.example.jdbc.dto.KonfigurasiMitra;
+import com.example.jdbc.dto.ProgramDetailDTO;
 import com.example.jdbc.dto.ProgramInsert;
+import com.example.jdbc.service.ProgramDetailService;
 import com.example.jdbc.service.ProgramInsertService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,10 @@ public class TestJdbcController {
     
     @Autowired
     private ProgramInsertService programInsertService;
+
+    @Autowired
+    private ProgramDetailService programDetailService;
+
 
     public TestJdbcController(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -47,6 +53,14 @@ public class TestJdbcController {
     public ResponseEntity programInsert(@RequestBody ProgramInsert programInsert) {
 
         Object o = programInsertService.programInsert(programInsert);
+
+        return ResponseEntity.ok().body(o);
+    }
+
+    @PostMapping("/programDetail")
+    public ResponseEntity programDetail(@RequestBody ProgramDetailDTO programDetailDTO) {
+
+        Object o = programDetailService.programDetail(programDetailDTO);
 
         return ResponseEntity.ok().body(o);
     }

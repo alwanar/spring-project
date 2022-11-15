@@ -6,6 +6,10 @@ import com.example.jdbc.dto.ProgramDetailDTO;
 import com.example.jdbc.dto.ProgramInsert;
 import com.example.jdbc.service.ProgramDetailService;
 import com.example.jdbc.service.ProgramInsertService;
+import com.example.jdbc.service.TestTransactionService;
+import com.example.jdbc.test.ServicePenampung;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,11 +19,16 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 public class TestJdbcController {
+
+    private static Logger log = LoggerFactory.getLogger(TestJdbcController.class);
     JdbcTemplate jdbcTemplate;
     
     @Autowired
@@ -27,6 +36,12 @@ public class TestJdbcController {
 
     @Autowired
     private ProgramDetailService programDetailService;
+
+    @Autowired
+    private TestTransactionService testTransactionService;
+
+    @Autowired
+    private ServicePenampung service;
 
 
     public TestJdbcController(JdbcTemplate jdbcTemplate) {
@@ -57,10 +72,26 @@ public class TestJdbcController {
         return ResponseEntity.ok().body(o);
     }
 
-    @PostMapping("/programDetail")
-    public ResponseEntity programDetail(@RequestBody ProgramDetailDTO programDetailDTO) {
+    @PostMapping("/testTransactions")
+    public ResponseEntity testTransaction(@RequestBody ProgramInsert programInsert) {
 
-        Object o = programDetailService.programDetail(programDetailDTO);
+        Object o = testTransactionService.saveData(programInsert);
+
+        return ResponseEntity.ok().body(o);
+    }
+
+    @PostMapping("/testTransactions2")
+    public ResponseEntity testTransaction2(@RequestBody ProgramInsert programInsert) {
+
+        Object o = service.doIt(programInsert);
+
+        return ResponseEntity.ok().body(o);
+    }
+
+    @PostMapping("/programDetail")
+    public ResponseEntity programDetail(@RequestBody ProgramDetailDTO programDetailDTO, HttpServletRequest servletRequest) {
+
+        Object o = programDetailService.programDetail(programDetailDTO, servletRequest);
 
         return ResponseEntity.ok().body(o);
     }
@@ -76,6 +107,24 @@ public class TestJdbcController {
 
         return ResponseEntity.ok().body(sqlRowSet);
     }
+
+    @PostMapping ("/testAsync")
+    public ResponseEntity testAsync(@RequestBody ProgramDetailDTO programDetailDTO) throws ExecutionException, InterruptedException {
+        CompletableFuture<Boolean> queryMitra = programDetailService.queryMitra(programDetailDTO.getFIDProgram());
+        CompletableFuture<Boolean> exist = programDetailService.isExist(programDetailDTO.getFIDProgram());
+        CompletableFuture<KonfigurasiMitra> data = programDetailService.getData(programDetailDTO.getFIDProgram());
+
+
+        CompletableFuture.allOf(queryMitra, exist, data).join();
+
+        System.out.println("queryMitra -->  " + Thread.currentThread().getName() + " " + queryMitra.get());
+        System.out.println("exist --> " + Thread.currentThread().getName() + " " + exist.get());
+        System.out.println("exist --> " + Thread.currentThread().getName() + " " + data.get());
+
+        return ResponseEntity.ok().body("oke!");
+    }
+    
+    
 
     @GetMapping("/dcproduk")
     public ResponseEntity test2() {
@@ -145,5 +194,10 @@ public class TestJdbcController {
                 } , objects); //
 
         return ResponseEntity.ok().body(mitra);
+    }
+
+    @GetMapping("/cobaaja")
+    public ResponseEntity<String> test4(){
+        return ResponseEntity.ok().body("ja");
     }
 }

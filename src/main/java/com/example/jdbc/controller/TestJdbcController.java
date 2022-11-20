@@ -8,9 +8,11 @@ import com.example.jdbc.service.ProgramDetailService;
 import com.example.jdbc.service.ProgramInsertService;
 import com.example.jdbc.service.TestTransactionService;
 import com.example.jdbc.test.ServicePenampung;
+import com.example.jdbc.transactional.TestTransactionalService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.jdbc.core.JdbcTemplate;
 //import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -21,7 +23,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -29,7 +33,13 @@ import java.util.concurrent.ExecutionException;
 public class TestJdbcController {
 
     private static Logger log = LoggerFactory.getLogger(TestJdbcController.class);
+    @Autowired
+    @Qualifier("jdbcTemplate")
     JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    @Qualifier("testDbJdbcTemplate")
+    JdbcTemplate jdbcTemplateTestDb;
     
     @Autowired
     private ProgramInsertService programInsertService;
@@ -43,10 +53,13 @@ public class TestJdbcController {
     @Autowired
     private ServicePenampung service;
 
+    @Autowired
+    private TestTransactionalService testTransactionalService;
 
-    public TestJdbcController(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+
+//    public TestJdbcController(@Qualifier("jdbcTemplate") JdbcTemplate jdbcTemplate) {
+//        this.jdbcTemplate = jdbcTemplate;
+//    }
 
     private String sql = "select flag_dasar, nomor_pks_sp3, tgl_awal_pks_sp3, tgl_akhir_pks_sp3, coalesce(c.cov_macet,0) as cov_macet, " +
             "COALESCE(FIDSkemaPerhitunganBunga,1) AS FIDSkemaPerhitunganBunga, " +
@@ -68,8 +81,29 @@ public class TestJdbcController {
     public ResponseEntity programInsert(@RequestBody ProgramInsert programInsert) {
 
         Object o = programInsertService.programInsert(programInsert);
-
+        Map<String, Object> logMap = new LinkedHashMap<>();
+        logMap.put("Request", programInsert);
+        logMap.put("Response", o);
+        log.info("{}", logMap);
         return ResponseEntity.ok().body(o);
+    }
+
+    @GetMapping("/testData")
+    public ResponseEntity testData() {
+
+        Optional<TestTransactionalService.Tutorial> tutorial = testTransactionalService.testData();
+
+        log.info("tutorial : {}", tutorial.isPresent()); //false
+
+        return ResponseEntity.ok().body("Oke!!");
+    }
+
+    @GetMapping("/testTransactional2")
+    public ResponseEntity programInsert() {
+
+     testTransactionalService.testTransaction();
+
+        return ResponseEntity.ok().body("Oke!!");
     }
 
     @PostMapping("/testTransactions")

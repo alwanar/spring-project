@@ -4,6 +4,8 @@ import com.example.jdbc.dto.KonfigurasiMitra;
 import com.example.jdbc.dto.ProgramDetailDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -21,11 +23,13 @@ public class ProgramDetailService {
     private static Logger log = LoggerFactory.getLogger(ProgramDetailService.class);
 
 
+    @Autowired
+    @Qualifier("jdbcTemplate")
     private JdbcTemplate jdbcTemplate;
 
-    public ProgramDetailService(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+//    public ProgramDetailService(JdbcTemplate jdbcTemplate) {
+//        this.jdbcTemplate = jdbcTemplate;
+//    }
 
     public Object programDetail(ProgramDetailDTO programDetailDTO, HttpServletRequest servletRequest) {
 

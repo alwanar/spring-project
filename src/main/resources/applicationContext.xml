@@ -1,0 +1,71 @@
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<beans xmlns="http://www.springframework.org/schema/beans"-->
+<!--       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"-->
+<!--       xsi:schemaLocation="http://www.springframework.org/schema/beans-->
+<!--    http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">-->
+
+<!--    &lt;!&ndash; Scans the classpath for annotated components &ndash;&gt;-->
+<!--    <context:component-scan base-package="com.example.jdbc"/>-->
+
+<!--    &lt;!&ndash; Annotation driven transactions &ndash;&gt;-->
+<!--    <tx:annotation-driven transaction-manager="transactionManager"/>-->
+
+<!--    &lt;!&ndash; Atomikos JTA transaction manager &ndash;&gt;-->
+<!--    <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">-->
+<!--        <property name="allowCustomIsolationLevels" value="true"/>-->
+
+<!--        <property name="transactionManager">-->
+<!--            <bean class="com.atomikos.icatch.jta.UserTransactionManager" init-method="init" destroy-method="close">-->
+<!--                <property name="forceShutdown" value="false"/>-->
+<!--            </bean>-->
+<!--        </property>-->
+
+<!--        <property name="userTransaction">-->
+<!--            <bean class="com.atomikos.icatch.jta.J2eeUserTransaction">-->
+<!--                <property name="transactionTimeout" value="300"/>-->
+<!--            </bean>-->
+<!--        </property>-->
+<!--    </bean>-->
+
+<!--    &lt;!&ndash; H2 data source &ndash;&gt;-->
+<!--    &lt;!&ndash; XADataSources must always be accessed through a pool, never directly &ndash;&gt;-->
+<!--    <bean id="atomikosDataSource" class="com.atomikos.jdbc.AtomikosDataSourceBean" init-method="init" destroy-method="close">-->
+<!--        <property name="uniqueResourceName" value="AtomikosDataSource"/>-->
+<!--        <property name="poolSize" value="1"/>-->
+<!--        <property name="testQuery" value="SELECT 1"/>-->
+<!--        <property name="xaDataSource">-->
+<!--            <bean class="org.">-->
+<!--                <property name="URL" value="jdbc:h2:mem:db"/>-->
+<!--                <property name="user" value="user"/>-->
+<!--                <property name="password" value="password"/>-->
+<!--            </bean>-->
+<!--        </property>-->
+<!--    </bean>-->
+
+<!--    &lt;!&ndash; ActiveMQ connection factory &ndash;&gt;-->
+<!--    &lt;!&ndash; JTA/XA-enabled JMS &ndash;&gt;-->
+<!--    <bean id="atomikosJmsConnectionFactory" class="com.atomikos.jms.AtomikosConnectionFactoryBean" init-method="init">-->
+<!--        <property name="uniqueResourceName" value="ActiveMQXA"/>-->
+<!--        <property name="xaConnectionFactory">-->
+<!--            <bean class="org.apache.activemq.ActiveMQXAConnectionFactory">-->
+<!--                <property name="brokerURL" value="vm://localhost?broker.persistent=false"/>-->
+<!--            </bean>-->
+<!--        </property>-->
+<!--        <property name="poolSize" value="5"/>-->
+<!--    </bean>-->
+
+
+<!--    <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">-->
+<!--        <property name="connectionFactory" ref="atomikosJmsConnectionFactory"/>-->
+<!--        <property name="receiveTimeout" value="2000"/>-->
+<!--        &lt;!&ndash; "sessionTransacted" has to be set to "true" to start an transaction for every incoming JMS message &ndash;&gt;-->
+<!--        <property name="sessionTransacted" value="true"/>-->
+<!--        &lt;!&ndash; sessionAcknowledgeMode has to be set to javax.jms.Session.SESSION_TRANSACTED &ndash;&gt;-->
+<!--        <property name="sessionAcknowledgeMode" value="0"/>-->
+<!--    </bean>-->
+
+<!--    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">-->
+<!--        <property name="dataSource" ref="atomikosDataSource"/>-->
+<!--    </bean>-->
+
+<!--</beans>-->

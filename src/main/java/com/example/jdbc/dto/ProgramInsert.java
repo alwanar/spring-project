@@ -65,6 +65,16 @@ public class ProgramInsert {
         return logInsert;
     }
 
+    @Override
+    public String toString() {
+        return "ProgramInsert{" +
+                "FIDProgram='" + FIDProgram + '\'' +
+                ", NamaProgram='" + NamaProgram + '\'' +
+                ", TanggalMulaiProgram='" + TanggalMulaiProgram + '\'' +
+                ", TanggalAwalRealisasi='" + TanggalAwalRealisasi + '\'' +
+                '}';
+    }
+
     public long convertDate(String value) {
         SimpleDateFormat f = new SimpleDateFormat("dd/MM/yyyy");
         try {

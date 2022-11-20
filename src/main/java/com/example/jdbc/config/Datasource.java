@@ -2,6 +2,9 @@ package com.example.jdbc.config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -22,19 +25,40 @@ public class Datasource {
 //    }
 
     @Bean
-    public DataSource dataSource() {
-        DriverManagerDataSource ds = new DriverManagerDataSource();
-        ds.setUrl("jdbc:sqlserver://localhost:1433;database=op_pusat;Encrypt=true;trustServerCertificate=true");
-        ds.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-        ds.setUsername("Demo");
-        ds.setPassword("Uat46");
-        return ds;
+    @ConfigurationProperties("spring.datasource.oppusat")
+    public DataSourceProperties opPusatProperties(){
+        return new DataSourceProperties();
     }
 
     @Bean
-    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
+    @ConfigurationProperties("spring.datasource.testdb")
+    public DataSourceProperties devProperties(){
+        return new DataSourceProperties();
+    }
+
+
+    @Bean
+    public DataSource devDataSource() {
+        return devProperties()
+                .initializeDataSourceBuilder()
+                .build();
+    }
+
+    @Bean
+    public DataSource opPusatDataSource() {
+        return opPusatProperties()
+                .initializeDataSourceBuilder()
+                .build();
+    }
+
+    @Bean
+    public JdbcTemplate jdbcTemplate(@Qualifier("opPusatDataSource") DataSource dataSource) {
         return new JdbcTemplate(dataSource);
     }
 
 
+    @Bean
+    public JdbcTemplate testDbJdbcTemplate(@Qualifier("devDataSource") DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
+    }
 }
